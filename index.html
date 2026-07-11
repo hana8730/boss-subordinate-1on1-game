@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>1年目課長の1on1 ── 対話シミュレーション</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f3ead7;
+    --paper-deep:#e9dcc0;
+    --ink:#242231;
+    --ink-soft:#5a5568;
+    --clay:#b85c33;
+    --clay-deep:#943f1e;
+    --sage:#6f7d52;
+    --sage-deep:#556140;
+    --line: rgba(36,34,49,0.16);
+    --card-shadow: 0 18px 40px -22px rgba(36,34,49,0.45);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#211f2c;
+      --paper-deep:#2a2736;
+      --ink:#f1e9d8;
+      --ink-soft:#c9c0d8;
+      --clay:#e08a5b;
+      --clay-deep:#f0a877;
+      --sage:#9db07a;
+      --sage-deep:#b7c797;
+      --line: rgba(241,233,216,0.16);
+      --card-shadow: 0 18px 40px -20px rgba(0,0,0,0.6);
+    }
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(184,92,51,0.10), transparent 55%),
+      radial-gradient(ellipse at 100% 110%, rgba(111,125,82,0.12), transparent 55%),
+      var(--paper);
+    color:var(--ink);
+    font-family:"Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
+    display:flex;
+    justify-content:center;
+    padding: clamp(16px, 4vw, 56px) 16px 80px;
+    position:relative;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    opacity:0.5;
+    mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  }
+  @media (prefers-color-scheme: dark){
+    body::before{ mix-blend-mode:screen; opacity:0.35; }
+  }
+
+  .stage{ width:100%; max-width:620px; position:relative; }
+
+  header.masthead{
+    text-align:center;
+    margin-bottom:28px;
+    padding-bottom:20px;
+    border-bottom:1px solid var(--line);
+  }
+  .kicker{
+    font-size:12px;
+    letter-spacing:0.32em;
+    color:var(--clay);
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  h1.title{
+    font-family:"Shippori Mincho", serif;
+    font-weight:800;
+    font-size: clamp(26px, 5vw, 34px);
+    margin:0 0 8px;
+    letter-spacing:0.02em;
+  }
+  .subtitle{ color:var(--ink-soft); font-size:14px; line-height:1.8; }
+
+  .card{
+    background: linear-gradient(180deg, var(--paper-deep), var(--paper));
+    border:1px solid var(--line);
+    border-radius:6px;
+    box-shadow: var(--card-shadow);
+    padding: clamp(20px,4vw,36px);
+    position:relative;
+  }
+  .card::after{
+    content:"";
+    position:absolute; inset:6px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    pointer-events:none;
+    opacity:0.6;
+  }
+
+  /* ---- Intro screen ---- */
+  .intro p{ line-height:2; font-size:15px; margin:0 0 16px; }
+  .cast{
+    display:flex; gap:14px; margin: 22px 0 26px;
+    padding:16px; border:1px dashed var(--line); border-radius:4px;
+  }
+  .cast div.role{ font-size:12px; color:var(--ink-soft); }
+  .cast .name{ font-family:"Shippori Mincho",serif; font-weight:600; font-size:16px; margin-bottom:2px; }
+
+  button.primary{
+    font-family:"Zen Kaku Gothic New", sans-serif;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.06em;
+    color:var(--paper);
+    background:var(--clay);
+    border:none;
+    padding:14px 30px;
+    border-radius:3px;
+    cursor:pointer;
+    display:inline-flex; align-items:center; gap:10px;
+    transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+    box-shadow: 0 10px 22px -12px rgba(184,92,51,0.7);
+  }
+  button.primary:hover{ background:var(--clay-deep); transform:translateY(-1px); }
+  button.primary:active{ transform:translateY(0); }
+  button.ghost{
+    font-family:"Zen Kaku Gothic New", sans-serif;
+    font-size:13px; color:var(--ink-soft);
+    background:transparent; border:1px solid var(--line);
+    padding:10px 18px; border-radius:3px; cursor:pointer;
+  }
+  button.ghost:hover{ border-color:var(--clay); color:var(--clay); }
+
+  /* ---- Progress timeline ---- */
+  .timeline{ display:flex; align-items:center; margin-bottom:26px; }
+  .tl-step{ flex:1; display:flex; flex-direction:column; align-items:center; position:relative; }
+  .tl-dot{
+    width:11px; height:11px; border-radius:50%;
+    background:transparent; border:2px solid var(--line);
+    z-index:1;
+  }
+  .tl-step.done .tl-dot{ background:var(--ink-soft); border-color:var(--ink-soft); }
+  .tl-step.current .tl-dot{ background:var(--clay); border-color:var(--clay); width:13px; height:13px; box-shadow:0 0 0 4px rgba(184,92,51,0.18); }
+  .tl-line{ position:absolute; top:5px; left:-50%; width:100%; height:2px; background:var(--line); z-index:0; }
+  .tl-step:first-child .tl-line{ display:none; }
+  .tl-step.done .tl-line, .tl-step.current .tl-line{ background:var(--ink-soft); }
+  .tl-time{ margin-top:6px; font-size:10px; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+
+  /* ---- Scene ---- */
+  .context{
+    font-size:13px; color:var(--ink-soft); line-height:1.9;
+    margin-bottom:18px; font-style:italic;
+  }
+  .bubble{
+    display:flex; gap:12px; margin-bottom:26px;
+  }
+  .avatar{
+    flex:none; width:38px; height:38px; border-radius:50%;
+    background:var(--sage); color:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-family:"Shippori Mincho",serif; font-weight:600; font-size:15px;
+  }
+  .speech{
+    background: var(--paper);
+    border:1px solid var(--line);
+    border-radius: 2px 14px 14px 14px;
+    padding:14px 16px;
+    font-size:15px; line-height:1.85;
+    position:relative;
+  }
+  .speech .who{ display:block; font-size:11px; color:var(--sage-deep); font-weight:700; margin-bottom:6px; letter-spacing:0.04em; }
+
+  .choices{ display:flex; flex-direction:column; gap:12px; }
+  .choice{
+    display:flex; gap:14px; align-items:flex-start;
+    text-align:left;
+    width:100%;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:14px 16px;
+    cursor:pointer;
+    font-family:"Zen Kaku Gothic New", sans-serif;
+    font-size:14.5px; line-height:1.75; color:var(--ink);
+    transition: border-color .15s ease, transform .12s ease, box-shadow .15s ease;
+  }
+  .choice:hover:not(:disabled){ border-color:var(--clay); transform:translateY(-1px); box-shadow:0 10px 20px -16px rgba(36,34,49,0.5); }
+  .choice:disabled{ cursor:default; opacity:0.55; }
+  .choice.picked{ border-color:var(--clay); opacity:1; background:linear-gradient(180deg,var(--paper-deep),var(--paper)); }
+  .choice .tag{
+    flex:none; width:24px; height:24px; border-radius:50%;
+    border:1px solid var(--ink-soft); color:var(--ink-soft);
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700;
+  }
+  .choice.picked .tag{ background:var(--clay); border-color:var(--clay); color:var(--paper); }
+
+  .feedback{
+    margin-top:18px;
+    padding:14px 16px;
+    border-radius:3px;
+    border-left:3px solid var(--sage);
+    background: rgba(111,125,82,0.08);
+    font-size:13.5px; line-height:1.85; color:var(--ink);
+    animation: reveal .35s ease both;
+  }
+  .feedback.caution{ border-left-color:var(--clay); background:rgba(184,92,51,0.09); }
+  @keyframes reveal{ from{ opacity:0; transform:translateY(-6px);} to{opacity:1; transform:translateY(0);} }
+
+  .next-row{ display:flex; justify-content:flex-end; margin-top:20px; }
+
+  /* ---- Result ---- */
+  .stamp{
+    width:132px; height:132px; margin: 6px auto 22px;
+    border-radius:50%;
+    border:3px solid var(--clay);
+    box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 6px var(--clay);
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    color:var(--clay);
+    transform:rotate(-6deg);
+    font-family:"Shippori Mincho",serif;
+    font-weight:800;
+    font-size:16px;
+    line-height:1.4;
+    letter-spacing:0.04em;
+    animation: stampIn .5s cubic-bezier(.2,1.4,.4,1) both;
+  }
+  @keyframes stampIn{ from{ opacity:0; transform:rotate(-6deg) scale(1.6);} to{ opacity:1; transform:rotate(-6deg) scale(1);} }
+
+  .result-title{ text-align:center; font-family:"Shippori Mincho",serif; font-size:22px; font-weight:700; margin-bottom:4px; }
+  .result-sub{ text-align:center; color:var(--ink-soft); font-size:13px; margin-bottom:28px; }
+
+  .meters{ display:flex; flex-direction:column; gap:16px; margin-bottom:24px; }
+  .meter .m-label{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-soft); margin-bottom:6px; }
+  .m-track{ height:8px; border-radius:4px; background:var(--paper-deep); border:1px solid var(--line); overflow:hidden; }
+  .m-fill{ height:100%; border-radius:4px; width:0%; transition:width 1s cubic-bezier(.2,.8,.3,1); }
+  .m-fill.trust{ background: linear-gradient(90deg, var(--clay-deep), var(--clay)); }
+  .m-fill.safety{ background: linear-gradient(90deg, var(--sage-deep), var(--sage)); }
+
+  .reflection{
+    font-size:14.5px; line-height:2; padding:18px; border:1px dashed var(--line); border-radius:4px; margin-bottom:24px;
+  }
+  .result-actions{ display:flex; justify-content:center; gap:12px; }
+
+  footer.foot{ text-align:center; margin-top:24px; font-size:11px; color:var(--ink-soft); letter-spacing:0.04em; }
+
+  .hidden{ display:none !important; }
+
+  @media (max-width:420px){
+    .bubble{ gap:8px; }
+    .avatar{ width:32px; height:32px; font-size:13px; }
+    .tl-time{ display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <header class="masthead">
+    <div class="kicker">MANAGER TRAINING SIMULATION</div>
+    <h1 class="title">1年目課長の1on1</h1>
+    <div class="subtitle">対話の選択で、部下との信頼と心理的安全性がどう変わるかを体験する研修シミュレーションです。</div>
+  </header>
+
+  <!-- INTRO -->
+  <section id="screen-intro" class="card intro">
+    <p>あなたは、この春に課長へ昇進したばかり。今日は隔週で行っている1on1の日です。相手は入社3年目の部下・佐藤さん。最近、心なしか元気がない様子が気になっています。</p>
+    <p>会話の中で提示される2つの選択肢から、あなたの対応を選んでください。全7つの場面を通じて、あなたの1on1スタイルが最後に診断されます。</p>
+    <div class="cast">
+      <div>
+        <div class="name">課長（あなた）</div>
+        <div class="role">昇進1年目・マネジメント経験は浅い</div>
+      </div>
+      <div style="margin-left:auto; text-align:right;">
+        <div class="name">佐藤</div>
+        <div class="role">入社3年目・最近やや元気がない</div>
+      </div>
+    </div>
+    <button class="primary" onclick="startGame()">1on1をはじめる →</button>
+  </section>
+
+  <!-- SCENE -->
+  <section id="screen-scene" class="card hidden">
+    <div class="timeline" id="timeline"></div>
+    <div class="context" id="scene-context"></div>
+    <div class="bubble">
+      <div class="avatar">佐</div>
+      <div class="speech"><span class="who">佐藤</span><span id="scene-line"></span></div>
+    </div>
+    <div class="choices" id="scene-choices"></div>
+    <div id="scene-feedback"></div>
+    <div class="next-row hidden" id="next-row">
+      <button class="primary" onclick="nextScene()">次へ →</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="screen-result" class="card hidden">
+    <div class="stamp" id="result-stamp"></div>
+    <div class="result-title" id="result-title"></div>
+    <div class="result-sub">全7場面の選択から診断されたあなたの1on1スタイル</div>
+    <div class="meters">
+      <div class="meter">
+        <div class="m-label"><span>信頼度</span><span id="trust-pct"></span></div>
+        <div class="m-track"><div class="m-fill trust" id="trust-fill"></div></div>
+      </div>
+      <div class="meter">
+        <div class="m-label"><span>心理的安全性</span><span id="safety-pct"></span></div>
+        <div class="m-track"><div class="m-fill safety" id="safety-fill"></div></div>
+      </div>
+    </div>
+    <div class="reflection" id="result-reflection"></div>
+    <div class="result-actions">
+      <button class="ghost" onclick="location.reload()">別の選択でもう一度</button>
+    </div>
+  </section>
+
+  <footer class="foot">MANAGER 1on1 TRAINING ── SOCIAL SKILLS SIMULATION</footer>
+</div>
+
+<script>
+const SCENES = [
+  {
+    time: "0分",
+    context: "会議室。佐藤さんはノートPCを開いてはいるものの、声のトーンがいつもよりわずかに低い。",
+    line: "「あ、お疲れさまです……今日もよろしくお願いします」",
+    choices: [
+      {
+        label: "「最近どう？体調とか大丈夫？」と近況から尋ねる",
+        feedback: "相手の状態に目を向けてから始める姿勢は、心理的安全性の土台になります。",
+        trust: 2, safety: 3, good:true
+      },
+      {
+        label: "「今日は進捗確認と来月の目標のすり合わせをしよう」と本題から入る",
+        feedback: "効率的な進行ですが、いきなり業務の話に入ると身構えられてしまうことがあります。",
+        trust: 0, safety: -1, good:false
+      }
+    ]
+  },
+  {
+    time: "4分",
+    context: "相槌はしっかり返してくれるものの、心なしか表情が硬い。",
+    line: "「大丈夫です、大丈夫です……」",
+    choices: [
+      {
+        label: "「なんとなく元気ないみたいだけど、何かあった？」と率直に聞く",
+        feedback: "変化に気づいて言葉にすることは信頼構築の第一歩。トーンを柔らかく保つことが鍵です。",
+        trust: 3, safety: 2, good:true
+      },
+      {
+        label: "気づいていても触れず、そのまま業務の話を進める",
+        feedback: "相手のペースを尊重した対応ですが、「気づいてもらえなかった」という寂しさにつながることもあります。",
+        trust: -1, safety: -1, good:false
+      }
+    ]
+  },
+  {
+    time: "9分",
+    context: "少し間があってから、佐藤さんがぽつりと話し始める。",
+    line: "「正直、今のプロジェクトの進め方に、納得いってない部分があって……」",
+    choices: [
+      {
+        label: "「そうなんだ、詳しく聞かせて」とまず最後まで聞く",
+        feedback: "結論を急がず受け止める傾聴は、部下が本音を話し続けられる土台になります。",
+        trust: 3, safety: 3, good:true
+      },
+      {
+        label: "「具体的にどこが問題？じゃあこうしよう」とすぐ解決策を提示する",
+        feedback: "スピード感はありますが、最後まで聞く前に結論を出すと「決めつけられた」と感じさせることがあります。",
+        trust: 0, safety: -2, good:false
+      }
+    ]
+  },
+  {
+    time: "14分",
+    context: "少し勇気を出したように、佐藤さんが自分の考えを話す。",
+    line: "「残業してまで頑張る意味って、正直あるのかなって……定時で終わらせて、自分の時間も大事にしたいんです」",
+    choices: [
+      {
+        label: "「その考え方、よくわかるよ。まず定時内で終わる進め方を一緒に考えよう」と価値観を受け止める",
+        feedback: "相手の価値観を否定せず受け止めることで、対話の土台が保たれます。世代間ギャップは「正す」のではなく「橋渡し」するものです。",
+        trust: 3, safety: 2, good:true
+      },
+      {
+        label: "「俺たちの若い頃はそれが当たり前だったけどな」と自分の価値観を伝える",
+        feedback: "経験を伝えること自体は悪くありませんが、比較として使うと「否定された」と受け取られやすくなります。",
+        trust: -2, safety: -2, good:false
+      }
+    ]
+  },
+  {
+    time: "19分",
+    context: "話題を変え、直近の提出資料に事実確認の漏れがあったことを伝える場面。",
+    line: "「あ……そこ、ちゃんと確認できてなかったです、すみません」",
+    choices: [
+      {
+        label: "良かった点を先に伝えたうえで、「ここは事実確認をもう一段丁寧にできるとさらに良くなる」と具体的に伝える",
+        feedback: "ポジティブな点とセットで具体的に伝えるフィードバックは受け止めやすく、行動変容につながりやすい方法です。",
+        trust: 2, safety: 2, good:true
+      },
+      {
+        label: "「これ、事実確認甘くない？」とその場で率直に指摘する",
+        feedback: "率直さは大切ですが、良い点への言及がないまま指摘が続くと、防衛的になりやすくなります。",
+        trust: -1, safety: -1, good:false
+      }
+    ]
+  },
+  {
+    time: "24分",
+    context: "フィードバックを受けて、佐藤さんが少し黙り込む。",
+    line: "（……無言でノートPCの画面を見つめている）",
+    choices: [
+      {
+        label: "急かさず数秒待ってから、「今、考えてること、聞いてもいい？」と声をかける",
+        feedback: "沈黙を無理に埋めないことは、相手が自分の言葉を整理する時間を尊重する対応です。",
+        trust: 2, safety: 3, good:true
+      },
+      {
+        label: "気まずさを感じて、「まあ次から気をつけて」とすぐに話をまとめる",
+        feedback: "気まずさを埋めたくなるのは自然なことですが、考えを言葉にする前に打ち切ると本音を話す機会を失わせてしまいます。",
+        trust: -1, safety: -1, good:false
+      }
+    ]
+  },
+  {
+    time: "28分",
+    context: "1on1も終盤。今日話した内容を、次にどうつなげるかという場面。",
+    line: "「今日、話せてよかったです」",
+    choices: [
+      {
+        label: "「次までにできそうなことを一緒に決めよう」とネクストアクションをすり合わせる",
+        feedback: "一緒に決めるプロセスは、部下の主体性と当事者意識を引き出します。",
+        trust: 3, safety: 2, good:true
+      },
+      {
+        label: "「じゃあこれとこれ、次までにお願い」と課長側でネクストアクションを決めて伝える",
+        feedback: "明確な指示は分かりやすい一方、毎回一方的に決められると受け身の姿勢が強まっていくことがあります。",
+        trust: 0, safety: -1, good:false
+      }
+    ]
+  }
+];
+
+const TRUST_MIN = -5, TRUST_MAX = 18;
+const SAFETY_MIN = -9, SAFETY_MAX = 17;
+const TRUST_THRESHOLD = 7;
+const SAFETY_THRESHOLD = 4;
+
+const DIAGNOSES = {
+  "hh": {
+    stamp: "傾聴<br>伴走型",
+    title: "傾聴・伴走型",
+    text: "あなたは、部下の言葉にまず耳を傾け、価値観の違いも否定せずに受け止めるスタイルです。信頼と安心の両方を育てながら対話できています。次のステップとして、傾聴で得た情報を「次の行動」に変換する問いかけ（「じゃあ何から始めてみる？」など）を増やすと、部下の主体性がさらに引き出されます。"
+  },
+  "hl": {
+    stamp: "指示<br>管理型",
+    title: "指示・管理型",
+    text: "物事を前に進める力があり、部下からの一定の信頼もあります。ただし、結論を急いだり自分の経験を基準に話したりする場面が多く、部下が本音を話しづらい空気ができているかもしれません。次の1on1では「まず最後まで聞く」を意識するだけで、心理的安全性は大きく変わります。"
+  },
+  "lh": {
+    stamp: "放任<br>様子見型",
+    title: "放任・様子見型",
+    text: "相手のペースを尊重し、踏み込みすぎない距離感を保てています。一方で、変化に気づいても言葉にしない場面が多く、「気にかけてもらえていない」と感じさせている可能性があります。安心できる空気はできているので、そこに一歩踏み込んで気づきを言葉にする勇気を足してみましょう。"
+  },
+  "ll": {
+    stamp: "過干渉<br>詰め寄り型",
+    title: "過干渉・詰め寄り型",
+    text: "業務を前に進めようとする熱意は伝わりますが、結論を急いだり自分の価値観を基準にしたりする場面が多く、部下が身構えてしまう対話になっているかもしれません。次回はまず一つだけ、「相手の言葉を最後まで聞いてから話す」を意識してみてください。それだけで対話の空気は変わります。"
+  }
+};
+
+let current = 0;
+let trust = 0;
+let safety = 0;
+let picked = false;
+
+function startGame(){
+  document.getElementById('screen-intro').classList.add('hidden');
+  document.getElementById('screen-scene').classList.remove('hidden');
+  renderScene();
+}
+
+function renderTimeline(){
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = '';
+  SCENES.forEach((s, i) => {
+    const step = document.createElement('div');
+    step.className = 'tl-step' + (i < current ? ' done' : i === current ? ' current' : '');
+    step.innerHTML = '<div class="tl-line"></div><div class="tl-dot"></div><div class="tl-time">' + s.time + '</div>';
+    tl.appendChild(step);
+  });
+}
+
+function renderScene(){
+  picked = false;
+  const scene = SCENES[current];
+  renderTimeline();
+  document.getElementById('scene-context').textContent = scene.context;
+  document.getElementById('scene-line').textContent = scene.line;
+  const choicesEl = document.getElementById('scene-choices');
+  choicesEl.innerHTML = '';
+  scene.choices.forEach((c, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.innerHTML = '<span class="tag">' + (idx === 0 ? 'A' : 'B') + '</span><span>' + c.label + '</span>';
+    btn.onclick = () => selectChoice(idx);
+    choicesEl.appendChild(btn);
+  });
+  document.getElementById('scene-feedback').innerHTML = '';
+  document.getElementById('next-row').classList.add('hidden');
+}
+
+function selectChoice(idx){
+  if(picked) return;
+  picked = true;
+  const scene = SCENES[current];
+  const c = scene.choices[idx];
+  trust += c.trust;
+  safety += c.safety;
+
+  const buttons = document.querySelectorAll('#scene-choices .choice');
+  buttons.forEach((b, i) => {
+    b.disabled = true;
+    if(i === idx) b.classList.add('picked');
+  });
+
+  const fb = document.getElementById('scene-feedback');
+  fb.innerHTML = '<div class="feedback' + (c.good ? '' : ' caution') + '">' + c.feedback + '</div>';
+
+  document.getElementById('next-row').classList.remove('hidden');
+}
+
+function nextScene(){
+  current++;
+  if(current >= SCENES.length){
+    showResult();
+  } else {
+    renderScene();
+  }
+}
+
+function showResult(){
+  document.getElementById('screen-scene').classList.add('hidden');
+  const resultEl = document.getElementById('screen-result');
+  resultEl.classList.remove('hidden');
+
+  const trustPct = Math.round(Math.max(0, Math.min(100, (trust - TRUST_MIN) / (TRUST_MAX - TRUST_MIN) * 100)));
+  const safetyPct = Math.round(Math.max(0, Math.min(100, (safety - SAFETY_MIN) / (SAFETY_MAX - SAFETY_MIN) * 100)));
+
+  const key = (trust >= TRUST_THRESHOLD ? 'h' : 'l') + (safety >= SAFETY_THRESHOLD ? 'h' : 'l');
+  const d = DIAGNOSES[key];
+
+  document.getElementById('result-stamp').innerHTML = d.stamp;
+  document.getElementById('result-title').textContent = d.title;
+  document.getElementById('result-reflection').textContent = d.text;
+  document.getElementById('trust-pct').textContent = trustPct + '%';
+  document.getElementById('safety-pct').textContent = safetyPct + '%';
+
+  requestAnimationFrame(() => {
+    document.getElementById('trust-fill').style.width = trustPct + '%';
+    document.getElementById('safety-fill').style.width = safetyPct + '%';
+  });
+}
+</script>
+</body>
+</html>
